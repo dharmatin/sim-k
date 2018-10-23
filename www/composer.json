@@ -1,0 +1,11 @@
+{
+    "name": "dharmatin/sim-k",
+    "description": "Sistem Informasi UMKM",
+    "authors": [
+        {
+            "name": "dharmatin",
+            "email": "dharmatin@gmail.com"
+        }
+    ],
+    "require": {}
+}
