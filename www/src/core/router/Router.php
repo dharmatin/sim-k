@@ -1,6 +1,7 @@
 <?php
 namespace Dharmatin\Simk\Core\Router;
 
+require __DIR__ . "/../helpers/uriMatcher.php";
 class Router {
 
   private $__request;
@@ -18,17 +19,19 @@ class Router {
 
   public function __call($name, $args) {
     list($route, $params) = $args;
-    if(!in_array(strtoupper($name), $this->__supportedHttpMethods)) {
-      $this->invalidMethodHandler();
-    }
+    if (hasMatcherUri($this->__request->redirectUrl, $route)) {
+      if(!in_array(strtoupper($name), $this->__supportedHttpMethods)) {
+        $this->invalidMethodHandler();
+      }
 
-    if ($params instanceof \Closure) {
-      $this->{strtolower($name)}[$this->__formatRoute($route)]["method"] = $params;
-    } else {
-      $controllerName = "\\Dharmatin\\Simk\\Controller\\" . \ucfirst($params["controller"]);
-      $this->__method = $params["method"];
-      $this->{strtolower($name)}[$this->__formatRoute($route)]["controller"] = (new $controllerName());
-      $this->{strtolower($name)}[$this->__formatRoute($route)]["method"] = $this->__method;
+      if ($params instanceof \Closure) {
+        $this->{strtolower($name)}[$this->__formatRoute($this->__request->requestUri)]["method"] = $params;
+      } else {
+        $controllerName = "\\Dharmatin\\Simk\\Controller\\" . \ucfirst($params["controller"]);
+        $this->__method = $params["method"];
+        $this->{strtolower($name)}[$this->__formatRoute($this->__request->requestUri)]["controller"] = (new $controllerName());
+        $this->{strtolower($name)}[$this->__formatRoute($this->__request->requestUri)]["method"] = $this->__method;
+      }
     }
   }
 
@@ -71,5 +74,9 @@ class Router {
 
   public function __destruct() {
     $this->resolve();
+  }
+
+  public function register($name, $args) {
+    list($route, $params) = $args;
   }
 }

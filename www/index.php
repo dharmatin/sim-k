@@ -5,10 +5,6 @@ $loader->addPsr4("Dharmatin\\Simk\\", "./src", true);
 $loader->addPsr4("Dharmatin\\Simk\\Controller\\", "./src/controllers", true);
 $loader->addPsr4("Dharmatin\\Simk\\Core\\Router\\", "./src/core/router", true);
 
-// require './src/core/router/Request.php';
-// require './src/core/router/Router.php';
-
-// use Dharmatin\Simk\Controller\Seller;
 use Dharmatin\Simk\Core\Router\Router;
 use Dharmatin\Simk\Core\Router\Request;
 
@@ -18,9 +14,22 @@ $router->get('/seller/v1/seller', array(
   "method" => "get"
 ));
 
-$router->get('/seller/v1/seller/1', array(
+$router->get('/seller/v1/seller/([1-9]+)', array(
   "controller" => "seller",
-  "method" => "get"
+  "method" => "id",
+  "id" => 1
+));
+
+$router->get('/seller/v1/seller/([1-9]+)/([1-9]+)', array(
+  "controller" => "seller",
+  "method" => "twoId",
+  "id" => 1
+));
+
+$router->get('/seller/v1/seller/([1-9]+)/((?=.*\d)(?=.*[a-zA-Z]).{2,8})', array(
+  "controller" => "seller",
+  "method" => "tripleId",
+  "id" => 1
 ));
 
 $router->post('/seller/v1/seller', array(
