@@ -3,6 +3,7 @@
 namespace Dharmatin\Simk\Controller;
 use Dharmatin\Simk\Core\Router\Request;
 use Dharmatin\Simk\Core\Configure;
+use Dharmatin\Simk\Core\Logger;
 class Seller {
 
   public function __construct() {
@@ -43,7 +44,7 @@ class Seller {
   public function tripleId() {
     $req = new Request();
     $id = $req->getUrlParams("id");
-    print_r(Configure::read());
+    Logger::write("info", "TEST WRITE TO DISK [" . json_encode($_GET) . "]");
     return "TRIPLE " . $id . " TIPE " . $req->getUrlParams("tipeId");
   }
 }

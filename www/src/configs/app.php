@@ -2,5 +2,9 @@
 
 return array(
   "env" => "dev",
-  "log" => true
+  "log" => array(
+    "enable" => true,
+    "level" => array("debug", "info"),
+    "file" => "/tmp/sim-k_{Ymd}.log"
+  )
 );
