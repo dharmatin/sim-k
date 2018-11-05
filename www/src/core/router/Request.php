@@ -40,4 +40,22 @@ class Request implements IRequest {
 
     return $body;
   }
+
+  public function getJsonRawBody() {
+    try {
+      $rawJson = file_get_contents("php://input");
+      return $this->isValidJson($rawJson) ? json_decode($rawJson) : null;
+    } catch(\Error $e) {
+
+    }
+  }
+
+  public function isValidJson($strJson) {
+    json_decode($strJson);
+    return json_last_error() == JSON_ERROR_NONE;
+  }
+
+  public function getUrlParams($name) {
+    return $_GET[$name];
+  }
 }

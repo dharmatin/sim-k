@@ -2,6 +2,7 @@
 
 namespace Dharmatin\Simk\Controller;
 use Dharmatin\Simk\Core\Router\Request;
+use Dharmatin\Simk\Core\Configure;
 class Seller {
 
   public function __construct() {
@@ -13,6 +14,9 @@ class Seller {
   }
 
   public function post() {
+    $req = new Request();
+    $body = $req->getJsonRawBody();
+    print_r($body);
     return "POST";
   }
 
@@ -37,6 +41,9 @@ class Seller {
   }
 
   public function tripleId() {
-    return "TRIPLE ID";
+    $req = new Request();
+    $id = $req->getUrlParams("id");
+    print_r(Configure::read());
+    return "TRIPLE " . $id . " TIPE " . $req->getUrlParams("tipeId");
   }
 }

@@ -18,21 +18,7 @@ class Router {
   }
 
   public function __call($name, $args) {
-    list($route, $params) = $args;
-    if (hasMatcherUri($this->__request->redirectUrl, $route)) {
-      if(!in_array(strtoupper($name), $this->__supportedHttpMethods)) {
-        $this->invalidMethodHandler();
-      }
-
-      if ($params instanceof \Closure) {
-        $this->{strtolower($name)}[$this->__formatRoute($this->__request->requestUri)]["method"] = $params;
-      } else {
-        $controllerName = "\\Dharmatin\\Simk\\Controller\\" . \ucfirst($params["controller"]);
-        $this->__method = $params["method"];
-        $this->{strtolower($name)}[$this->__formatRoute($this->__request->requestUri)]["controller"] = (new $controllerName());
-        $this->{strtolower($name)}[$this->__formatRoute($this->__request->requestUri)]["method"] = $this->__method;
-      }
-    }
+    $this->register($name, $args);
   }
 
   /**
@@ -60,6 +46,7 @@ class Router {
    * Resolves a route
    */
   public function resolve() {
+    header("{$this->__request->serverProtocol} 200");
     $methodDictionary = $this->{strtolower($this->__request->requestMethod)};
     $formatedRoute = $this->__formatRoute($this->__request->requestUri);
     $class = $methodDictionary[$formatedRoute];
@@ -78,5 +65,27 @@ class Router {
 
   public function register($name, $args) {
     list($route, $params) = $args;
+    if (hasMatchedUri($this->__request->redirectUrl, $route)) {
+      if(!in_array(strtoupper($name), $this->__supportedHttpMethods)) {
+        $this->invalidMethodHandler();
+      }
+
+      if ($params instanceof \Closure) {
+        $this->{strtolower($name)}[$this->__formatRoute($this->__request->requestUri)]["method"] = $params;
+      } else {
+        $controllerName = "\\Dharmatin\\Simk\\Controller\\" . \ucfirst($params["controller"]);
+        $this->__method = $params["method"];
+        $paramsUri = getMatchedUri($this->__request->redirectUrl, $route);
+        $this->registerParamsToQueryString($paramsUri, $params);
+        $this->{strtolower($name)}[$this->__formatRoute($this->__request->requestUri)]["controller"] = (new $controllerName());
+        $this->{strtolower($name)}[$this->__formatRoute($this->__request->requestUri)]["method"] = $this->__method;
+      }
+    }
+  }
+
+  public function registerParamsToQueryString($uriParams, $routeParams) {
+    $map = array_walk($routeParams, function($value, $key) use($uriParams) {
+      $_GET[$key] = isset($uriParams[$value]) ? $uriParams[$value] : $value;
+    });
   }
 }

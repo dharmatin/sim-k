@@ -2,14 +2,14 @@
 
 const SLASH = "/";
 
-function hasMatcherUri($url, $route) {
+function hasMatchedUri($url, $route) {
   $urlParts = explode("/", removeTrailingSlash($url));
   $routeParts = explode("/", removeTrailingSlash($route));
-  return count($urlParts) == count($routeParts) && count(getMatcherUri($url, $route)) > 0;
+  return count($urlParts) == count($routeParts) && count(getMatchedUri($url, $route)) > 0;
 }
 
 
-function getMatcherUri($url, $route) {
+function getMatchedUri($url, $route) {
   $pattern = "/" . str_replace("/", "\/", substr($route, 1)) . "\/?$/";
   preg_match($pattern, removeTrailingSlash($url), $matches);
   return $matches;
