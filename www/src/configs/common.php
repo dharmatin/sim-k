@@ -1,6 +1,6 @@
 <?php
 
 return array(
-  "environment" => "dev",
+  "env" => "dev",
   "log" => true
 );

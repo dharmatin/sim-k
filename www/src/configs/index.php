@@ -1,12 +1,24 @@
 <?php
 
-$environment = "dev";
+return function ($env){
 
-return function ($environment){
-  return array(
-    "env" => $environment,
-    "test" => array(
-      "hallo" => "OK"
-    )
-  );
+  function excludeFile($fileName, &$files) {
+    $fileIndex = array_search(__DIR__ . '/' . $fileName, $files);
+    unset($files[$fileIndex]);
+  }
+
+  function generate() {
+    $configs = [];
+    $files = glob(__DIR__ . '/*.php');
+    excludeFile("index.php", $files);
+    excludeFile("router.php", $files);
+    foreach ($files as $file) {
+      $info = pathinfo($file);
+      $configFile = @include $file;
+      $configs[$info["filename"]] = isset($configFile[$env]) ? $configFile[$env] : $configFile;
+    }
+    return $configs;
+  };
+  
+  return generate();
 };
