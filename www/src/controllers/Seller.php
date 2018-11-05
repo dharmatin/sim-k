@@ -43,6 +43,7 @@ class Seller {
   public function tripleId() {
     $req = new Request();
     $id = $req->getUrlParams("id");
+    print_r(Configure::read());
     return "TRIPLE " . $id . " TIPE " . $req->getUrlParams("tipeId");
   }
 }
