@@ -6,4 +6,6 @@ $app = @include CONFIG_DIR . "/app.php";
 $configuration = @include CONFIG_DIR . "/index.php";
 App::addConfiguration($configuration($app["env"])); 
 App::use(CONFIG_DIR . "/router.php");
+App::use(CONFIG_DIR . "/routers/seller.php");
+App::use(CONFIG_DIR . "/routers/employee.php");
 App::start();
