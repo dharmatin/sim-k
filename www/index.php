@@ -2,8 +2,8 @@
 define("CONFIG_DIR", __DIR__ . "/src/configs");
 
 require "./src/core/App.php";
-$common = @include CONFIG_DIR . "/common.php";
+$app = @include CONFIG_DIR . "/app.php";
 $configuration = @include CONFIG_DIR . "/index.php";
-App::addConfiguration($configuration($common["env"])); 
+App::addConfiguration($configuration($app["env"])); 
 App::use(CONFIG_DIR . "/router.php");
 App::start();
