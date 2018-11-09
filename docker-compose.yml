@@ -1,0 +1,17 @@
+version: '3'
+services:
+  api:
+    build: .
+    ports:
+      - "8080:80"
+    volumes:
+      - ./www:/var/www/site
+  mysql:
+    image: "mysql:latest"
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: blankon
+      MYSQL_USER: simk
+      MYSQL_PASS: blankon
+     
