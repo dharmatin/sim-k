@@ -46,7 +46,7 @@ class Router {
     } else {
       $controller = "\\Dharmatin\\Simk\\Controller\\" . \ucfirst($params["controller"]);
       $method = $params["method"];
-      echo call_user_func_array(array($controller, $method), array($this->request));
+      echo call_user_func_array(array(new $controller, $method), array($this->request));
     }
   }
   private function formatRoute($route) {
