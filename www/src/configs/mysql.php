@@ -2,15 +2,17 @@
 
 return array(
   "dev" => array(
-    "host" => "dev",
-    "port" => 3306,
+    "host" => "localjost",
+    "port" => 3307,
     "username" => "",
-    "password" => ""
+    "password" => "",
+    "database" => "sim_k"
   ),
   "beta" => array(
     "host" => "dev",
     "port" => 3306,
     "username" => "",
-    "password" => ""
+    "password" => "",
+    "database" => "sim_k"
   )
 );

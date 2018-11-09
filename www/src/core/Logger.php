@@ -27,7 +27,7 @@ class Logger {
     return \in_array($level, Configure::read("app.log.level"));
   }
 
-  private function writeToDisk($file, $log) {
+  private static function writeToDisk($file, $log) {
     file_put_contents($file, $log, FILE_APPEND);
   }
 }

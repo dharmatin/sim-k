@@ -8,4 +8,5 @@ App::addConfiguration($configuration($app["env"]));
 App::use(CONFIG_DIR . "/router.php");
 App::use(CONFIG_DIR . "/routers/seller.php");
 App::use(CONFIG_DIR . "/routers/employee.php");
+App::registerNamespace(@include CONFIG_DIR . "/loader.php");
 App::start();
