@@ -4,83 +4,76 @@ namespace Dharmatin\Simk\Core\Router;
 require __DIR__ . "/../helpers/uriMatcher.php";
 class Router {
 
-  private $__request;
-  private $__supportedHttpMethods = array(
+  private $request;
+  private $supportedHttpMethods = array(
     "GET",
     "POST",
     "PUT",
     "DELETE"
   );
-  private $__method;
+  private $controller;
+  private $method;
+  private $get = array();
+  private $post = array();
+  private $put = array();
+  private $delete = array();
 
   public function __construct(IRequest $request) {
-   $this->__request = $request;
+   $this->request = $request;
   }
 
   public function __call($name, $args) {
-    $this->register($name, $args);
+    list($route, $params) = $args;
+    RouterList::addRouter(strtolower($name), $route, $params);
+    if (hasMatchedUri($this->request->redirectUrl, $route) && strtolower($this->request->requestMethod) === strtolower($name)) {
+      $this->execute($params, $route);
+    } else if(!in_array(strtoupper($this->request->requestMethod), $this->supportedHttpMethods)) {
+      return $this->invalidMethodHandler();
+    } else if (!$this->findRoute($this->request->redirectUrl)) {
+      return $this->pageNotFound();
+    }
   }
 
-  /**
-   * Removes trailing forward slashes from the right of the route.
-   * @param route (string)
-   */
-  private function __formatRoute($route) {
+  public function register($caller, $route, $params) {
+    $this->{strtolower($caller)}[$this->formatRoute($route)] = $params;
+  }
+
+  private function execute($params, $route) {
+    http_response_code(200);
+    $this->registerParamsToQueryString(getMatchedUri($this->request->redirectUrl, $route), $params);
+    if ($params instanceof \Closure) {
+      echo call_user_func_array($params, array($this->request));
+    } else {
+      $controller = "\\Dharmatin\\Simk\\Controller\\" . \ucfirst($params["controller"]);
+      $method = $params["method"];
+      echo call_user_func_array(array($controller, $method), array($this->request));
+    }
+  }
+  private function formatRoute($route) {
     $result = rtrim($route, '/');
-    if ($result === '')
-    {
+    if ($result === '') {
       return '/';
     }
     return $result;
   }
 
   private function invalidMethodHandler() {
-    header("{$this->__request->mserverProtocol} 405 Method Not Allowed");
+    http_response_code(405);
   }
 
-  private function defaultRequestHandler() {
-    header("{$this->__request->serverProtocol} 404 Not Found");
+  private function pageNotFound() {
+    http_response_code(404);
   }
 
-  /**
-   * Resolves a route
-   */
-  public function resolve() {
-    header("{$this->__request->serverProtocol} 200");
-    $methodDictionary = $this->{strtolower($this->__request->requestMethod)};
-    $formatedRoute = $this->__formatRoute($this->__request->requestUri);
-    $class = $methodDictionary[$formatedRoute];
-    if(is_null($class))
-    {
-      $this->defaultRequestHandler();
-      return;
-    }
-    if (!isset($class["controller"])) echo call_user_func_array($class["method"], array($this->__request));
-    else echo call_user_func_array(array($class["controller"], $class["method"]), array($this->__request));
-  }
-
-  public function __destruct() {
-    $this->resolve();
-  }
-
-  public function register($name, $args) {
-    list($route, $params) = $args;
-    if (hasMatchedUri($this->__request->redirectUrl, $route)) {
-      if(!in_array(strtoupper($name), $this->__supportedHttpMethods)) {
-        $this->invalidMethodHandler();
-      }
-
-      if ($params instanceof \Closure) {
-        $this->{strtolower($name)}[$this->__formatRoute($this->__request->requestUri)]["method"] = $params;
-      } else {
-        $controllerName = "\\Dharmatin\\Simk\\Controller\\" . \ucfirst($params["controller"]);
-        $this->__method = $params["method"];
-        $paramsUri = getMatchedUri($this->__request->redirectUrl, $route);
-        $this->registerParamsToQueryString($paramsUri, $params);
-        $this->{strtolower($name)}[$this->__formatRoute($this->__request->requestUri)]["controller"] = (new $controllerName());
-        $this->{strtolower($name)}[$this->__formatRoute($this->__request->requestUri)]["method"] = $this->__method;
+  private function findRoute($uri) {
+    $routers = RouterList::getRouter();
+    $paths = array_keys($routers[strtolower($this->request->requestMethod)]);
+    foreach($paths as $path) {
+      if (hasMatchedUri($uri, $path)) {
+        return true;
       }
     }
+    return false;
   }
 
   public function registerParamsToQueryString($uriParams, $routeParams) {
