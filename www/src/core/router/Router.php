@@ -42,11 +42,11 @@ class Router {
     http_response_code(200);
     $this->registerParamsToQueryString(getMatchedUri($this->request->redirectUrl, $route), $params);
     if ($params instanceof \Closure) {
-      echo call_user_func_array($params, array($this->request));
+      Response::jsonResponse(call_user_func_array($params, array($this->request)));
     } else {
       $controller = "\\Dharmatin\\Simk\\Controller\\" . \ucfirst($params["controller"]);
       $method = $params["method"];
-      echo call_user_func_array(array(new $controller, $method), array($this->request));
+      Response::jsonResponse(call_user_func_array(array(new $controller, $method), array($this->request)));
     }
   }
   private function formatRoute($route) {
