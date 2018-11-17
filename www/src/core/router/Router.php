@@ -67,7 +67,7 @@ class Router {
 
   private function findRoute($uri) {
     $routers = RouterList::getRouter();
-    $paths = array_keys($routers[strtolower($this->request->requestMethod)]);
+    $paths = $routers[strtolower($this->request->requestMethod)] ? array_keys($routers[strtolower($this->request->requestMethod)]) : array();
     foreach($paths as $path) {
       if (hasMatchedUri($uri, $path)) {
         return true;

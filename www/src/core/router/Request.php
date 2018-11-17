@@ -15,13 +15,22 @@ class Request implements IRequest {
 
   private function __toCammelCase($string) {
     $result = strtolower($string);
-    preg_match_all('/_[a-z]/', $result, $matches);
+    preg_match_all('/[^a-zA-Z\d\s:][a-z]/', $result, $matches);
     foreach($matches[0] as $match) {
-      $c = str_replace('_', '', strtoupper($match));
+      $c = preg_replace('/[^a-zA-Z\d\s:]/', '', strtoupper($match));
       $result = str_replace($match, $c, $result);
     }
     
     return $result;
+  }
+
+  public function getHeaders() {
+    $headers = array();
+    foreach(getallheaders() as $key => $value) {
+      $headers[$this->__toCammelCase($key)] = $value;
+    }
+
+    return $headers;
   }
 
   public function getBody() {
@@ -48,6 +57,10 @@ class Request implements IRequest {
     } catch(\Error $e) {
 
     }
+  }
+
+  public function getQuery($queryString) {
+    return $_GET[$queryString];
   }
 
   public function isValidJson($strJson) {
