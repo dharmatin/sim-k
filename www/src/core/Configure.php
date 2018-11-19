@@ -2,7 +2,7 @@
 
 namespace Dharmatin\Simk\Core;
 
-use Dharmatin\Simk\Core\Helper\DotArrayConverter;
+use Dharmatin\Simk\Core\Helper\DotAsArrayKeyConverter;
 
 class Configure {
 
@@ -14,7 +14,7 @@ class Configure {
 
   public static function read($name = "") {
     if (!$name) return self::$configs;
-    return DotArrayConverter::get(self::$configs, $name);
+    return DotAsArrayKeyConverter::get(self::$configs, $name);
   }
 
   private function __convertToDeepObject($configs) {

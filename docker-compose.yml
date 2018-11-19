@@ -1,17 +1,25 @@
 version: '3'
 services:
   api:
+    container_name: sim_k-api
     build: .
     ports:
       - "8080:80"
     volumes:
       - ./www:/var/www/site
-  mysql:
-    image: "mysql:latest"
+  db:
+    container_name: sim_k-db
+    image: "mysql:5.7"
+    command: --default-authentication-plugin=mysql_native_password --explicit_defaults_for_timestamp
+    restart: always
     ports:
       - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: blankon
-      MYSQL_USER: simk
-      MYSQL_PASS: blankon
-     
+    volumes:
+      - ./data:/var/lib/mysql
+  cache:
+    container_name: sim_k-cache
+    image: memcached:1.5.12-alpine
+    ports:
+      - "11211:11211"

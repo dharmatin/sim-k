@@ -7,5 +7,7 @@
             "email": "dharmatin@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "firebase/php-jwt": "^5.0"
+    }
 }

@@ -4,13 +4,13 @@ namespace Dharmatin\Simk\Library;
 
 use Dharmatin\Simk\Core\Configure;
 use Dharmatin\Simk\Core\Router\Request;
-use Dharmatin\Simk\Core\Helper\DotArrayConverter;
+use Dharmatin\Simk\Core\Helper\DotAsArrayKeyConverter;
 
 class Translation {
   
   public static function translate($key) {
     $translation = self::loadDictionary();
-    return empty($key) ? $translation : DotArrayConverter::get($translation, $key);
+    return empty($key) ? $translation : DotAsArrayKeyConverter::get($translation, $key);
   }
 
   private static function loadDictionary() {

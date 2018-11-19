@@ -2,10 +2,10 @@
 
 return array(
   "dev" => array(
-    "host" => "localjost",
-    "port" => 3307,
-    "username" => "",
-    "password" => "",
+    "host" => "db",
+    "port" => 3306,
+    "username" => "root",
+    "password" => "blankon",
     "database" => "sim_k"
   ),
   "beta" => array(
