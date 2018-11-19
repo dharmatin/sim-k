@@ -63,10 +63,14 @@ class AuthService {
   }
 
   public function generateJWTToken() {
+    $user = $this->getUser();
+    unset($user->password);
+    unset($user->username);
+    unset($user->email);
     $payload = array(
       "iss" => $_SERVER["SERVER_NAME"],
       "exp" => time() + Configure::read("app.token.expired"),
-      "data" => $this->getUser()
+      "data" => $user
     ); 
     
     return JWT::encode($payload, Configure::read('app.token.key'));
