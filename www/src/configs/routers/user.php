@@ -6,4 +6,9 @@ return function($router) use($basePath) {
     "controller" => "user",
     "method" => "login"
   ));
+
+  $router->post($basePath . "/register", array(
+    "controller" => "user",
+    "method" => "register"
+  ));
 };

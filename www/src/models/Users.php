@@ -10,13 +10,18 @@ class Users extends Model {
     FROM users U
     INNER JOIN user_group UG ON U.user_group_id = UG.id
     INNER JOIN user_role UR ON UR.id = UG.user_role_id ";
+  
+  const ACTIVE_STATUS = "A";
+  const SUSPEND_STATUS = "S";
+  const BLOCKED_STATUS = "X";
+
   private $data;
   public function __construct() {
     parent::__construct();
     $this->data = new Data\User();
   }
   public function getAllUsers() {
-    $users = $this->fetchAll(self::DEFAULT_SELECT_STATEMENT);
+    $users = $this->fetchAll(self::DEFAULT_SELECT_STATEMENT . "WHERE status=:status", array("status" => self::ACTIVE_STATUS));
     return array_map(function($user) {
       $this->setUser($user);
       return $this->getUser();
@@ -24,13 +29,19 @@ class Users extends Model {
   }
 
   public function getUserById($id) {
-    $user = $this->fetchOne(self::DEFAULT_SELECT_STATEMENT . "WHERE U.id=:user_id", array("user_id" => $id));
+    $user = $this->fetchOne(self::DEFAULT_SELECT_STATEMENT . "WHERE U.id=:user_id AND status=:status", array(
+      "user_id" => $id, 
+      "status" => self::ACTIVE_STATUS
+    ));
     $this->setUser($user);
     return $this->getUser();
   }
 
   public function getUserByUsername($username) {
-    $user = $this->fetchOne(self::DEFAULT_SELECT_STATEMENT . "WHERE U.username=:username", array("username" => $username));
+    $user = $this->fetchOne(self::DEFAULT_SELECT_STATEMENT . "WHERE U.username=:username AND status=:status", array(
+      "username" => $username, 
+      "status" => self::ACTIVE_STATUS
+    ));
     $this->setUser($user);
     return $this->getUser();
   }

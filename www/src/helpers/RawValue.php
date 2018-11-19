@@ -3,7 +3,7 @@
 namespace Dharmatin\Simk\Helper;
 
 class RawValue {
-  protected $value;
+  public $value;
 
   public function __construct($value) {
     if (is_string($value) === false) {
@@ -12,9 +12,9 @@ class RawValue {
     $this->value = $value;
   }
 
-  public function getValue() {
-    return $this->value;
-  }
+  // public function getValue() {
+  //   return $this->value;
+  // }
 
   public function __toString() {
     return $this->value;

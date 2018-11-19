@@ -49,7 +49,7 @@ class AuthService {
     }
 
     return array(
-      "code" => 200,
+      "code" => Configure::read("constant.SUCCESS"),
       "token" => $this->generateJWTToken()
     );
   }

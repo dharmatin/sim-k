@@ -4,10 +4,6 @@ namespace Dharmatin\Simk\Model\Data;
 
 class UserLoginHistory {
   public $timestamp;
-  public $user;
+  public $userName;
   public $response;
-
-  public function __construct() {
-    $this->user = new User();
-  }
 }
