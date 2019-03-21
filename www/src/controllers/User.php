@@ -5,6 +5,8 @@ namespace Dharmatin\Simk\Controller;
 use Dharmatin\Simk\Service\AuthService;
 use Dharmatin\Simk\Service\TrackingService;
 use Dharmatin\Simk\Library\Translation;
+use Dharmatin\Simk\Helper\TypeHelper;
+use Dharmatin\Simk\Model\Request\Register;
 
 class User extends AppController {
 
@@ -22,5 +24,6 @@ class User extends AppController {
 
   public function register() {
     $service = new AuthService();
+    $service->register(TypeHelper::cast(new Register, $this->request->getJsonRawBody()));exit;
   }
 }

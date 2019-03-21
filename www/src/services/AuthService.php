@@ -7,6 +7,7 @@ use Dharmatin\Simk\Core\Configure;
 use Dharmatin\Simk\Helper\StringHelper;
 use Dharmatin\Simk\Library\Translation;
 use Dharmatin\Simk\Library\Memcached;
+use Dharmatin\Simk\Model\Request\Register;
 use Firebase\JWT\JWT;
 
 class AuthService {
@@ -14,6 +15,7 @@ class AuthService {
   const LOGIN_ATEMPT_INTERVAL = 300;
   const MAX_LOGIN_ATEMPT = 3;
   const LOGIN_ATEMPT_KEY = "login:atempt:{username}";
+  const GENERATED_PASSWORD_LENGTH = 8;
 
   private $user;
   private $cacheKey;
@@ -52,6 +54,14 @@ class AuthService {
       "code" => Configure::read("constant.SUCCESS"),
       "token" => $this->generateJWTToken()
     );
+  }
+
+  public function register(Register $request) {
+    print_r($request);
+  }
+
+  public function reset($email) {
+
   }
 
   public function getTokenInformation($token) {
@@ -105,5 +115,9 @@ class AuthService {
 
   private function setLoginAttemptCacheKey($username) {
     $this->cacheKey = str_replace("{username}", $username, self::LOGIN_ATEMPT_KEY);
+  }
+
+  private function generatePassword($limit) {
+    return substr(base_convert(sha1(uniqid(mt_rand())), 16,36), 0, $limit);
   }
 }
