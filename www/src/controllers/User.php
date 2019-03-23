@@ -4,7 +4,7 @@ namespace Dharmatin\Simk\Controller;
 
 use Dharmatin\Simk\Service\AuthService;
 use Dharmatin\Simk\Service\TrackingService;
-use Dharmatin\Simk\Library\Translation;
+use Dharmatin\Simk\Library\Translator;
 use Dharmatin\Simk\Helper\TypeHelper;
 use Dharmatin\Simk\Model\Request\Register;
 
@@ -17,7 +17,7 @@ class User extends AppController {
     $loggedInResponse = $service->login($request->username, $request->password);
     $tracking->addLoginTracking($request->username, $loggedInResponse);
     if ($loggedInResponse["code"] == $this->config::read("constant.SUCCESS")) 
-      return $this->successResponse(Translation::translate("login.success"), $loggedInResponse["token"]);
+      return $this->successResponse(Translator::translate("login.success"), $loggedInResponse["token"]);
     
     return $this->errorResponse($loggedInResponse["code"], $loggedInResponse["message"]);
   }
