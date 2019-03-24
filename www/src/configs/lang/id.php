@@ -3,7 +3,8 @@
 return array(
   "success" => "Sukses",
   "error_message" => array(
-    "expired_token" => "Token telah habis"
+    "expired_token" => "Token telah habis",
+    "error_500" => "Terjadi Kesalahan Internal"
   ),
   "login" => array(
     "success" => "Sukses Login",

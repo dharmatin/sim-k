@@ -10,6 +10,7 @@ use Dharmatin\Simk\Library\Memcached;
 use Dharmatin\Simk\Model\Request\Register;
 use Firebase\JWT\JWT;
 use Dharmatin\Simk\Model\Data\User;
+use Dharmatin\Simk\Core\Logger;
 
 class AuthService {
   
@@ -69,9 +70,11 @@ class AuthService {
           "message" => Translator::translate("register.success")
         );
       } catch(\PDOException $e) {
+        Logger::write("error", $e->getMessage());
+
         return array(
           "code" => Configure::read("constant.ERR_INTERNAL"),
-          "message" => $e->getMessage()
+          "message" => Translator::translate("error_message.error_500")
         );
       }
     }
