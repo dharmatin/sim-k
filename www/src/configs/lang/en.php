@@ -12,5 +12,10 @@ return array(
     "unauthorized_username" => "Username not found",
     "unauthorized" => "Wrong username & password combination",
     "maximum_attempt" => "You have reached maximum login attempt"
+  ),
+  "register" => array(
+    "success" => "User registered",
+    "error_user_exist" => "Username already exist",
+    "faield" => "Register failed"
   )
 );

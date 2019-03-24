@@ -9,6 +9,7 @@ use Dharmatin\Simk\Library\Translator;
 use Dharmatin\Simk\Library\Memcached;
 use Dharmatin\Simk\Model\Request\Register;
 use Firebase\JWT\JWT;
+use Dharmatin\Simk\Model\Data\User;
 
 class AuthService {
   
@@ -34,7 +35,9 @@ class AuthService {
       );
     }
 
-    if (!$this->getValidUser($username)) {
+    $user = $this->getUserByUsername($username);
+
+    if (!$user) {
       $this->addLoginAttempt($username);
       return array(
         "code" => Configure::read("constant.ERR_UNAUTHORIZED"), 
@@ -42,7 +45,7 @@ class AuthService {
       );
     }
 
-    if (!$this->isVerifiedPassword($password)) {
+    if (!$this->isVerifiedPassword($user, $password)) {
       $this->addLoginAttempt($username);
       return array(
         "code" => Configure::read("constant.ERR_UNAUTHORIZED"), 
@@ -52,12 +55,31 @@ class AuthService {
 
     return array(
       "code" => Configure::read("constant.SUCCESS"),
-      "token" => $this->generateJWTToken()
+      "token" => $this->generateJWTToken($user)
     );
   }
 
   public function register(Register $request) {
-    print_r($request);
+    $user = $this->getUserByUsername($request->username);
+    if (!$user) {
+      try{
+        $this->addUser($request);
+        return array(
+          "code" => Configure::read("constant.SUCCESS"),
+          "message" => Translator::translate("register.success")
+        );
+      } catch(\PDOException $e) {
+        return array(
+          "code" => Configure::read("constant.ERR_INTERNAL"),
+          "message" => $e->getMessage()
+        );
+      }
+    }
+
+    return array(
+      "code" => Configure::read("constant.ERR_UNAUTHORIZED"),
+      "message" => Translator::translate("register.error_user_exist")
+    );
   }
 
   public function reset($email) {
@@ -72,8 +94,7 @@ class AuthService {
     }
   }
 
-  public function generateJWTToken() {
-    $user = $this->getUser();
+  public function generateJWTToken(User $user) {
     unset($user->password);
     unset($user->username);
     unset($user->email);
@@ -81,17 +102,16 @@ class AuthService {
       "iss" => $_SERVER["SERVER_NAME"],
       "exp" => time() + Configure::read("app.token.expired"),
       "data" => $user
-    ); 
-    
+    );
+
     return JWT::encode($payload, Configure::read('app.token.key'));
   }
 
-  public function isVerifiedPassword($password) {
-    return md5($password) == $this->getUser()->password;
+  public function isVerifiedPassword(User $user, $password) {
+    return md5($password) === $user->password;
   }
-  public function getValidUser($username) {
-    $this->setUser((new Users())->getUserByUsername($username));  
-    return !empty($this->getUser()->id) ? $this->getUser() : null;
+  public function getUserByUsername($username) {
+    return ((new Users()))->getUserByUsername($username);
   }
 
   public function setUser($user) {
@@ -119,5 +139,17 @@ class AuthService {
 
   private function generatePassword($limit) {
     return substr(base_convert(sha1(uniqid(mt_rand())), 16,36), 0, $limit);
+  }
+
+  private function addUser(Register $registerUser) {
+    $user = new User();
+    $user->username = $registerUser->username;
+    $user->firstName = $registerUser->firstName;
+    $user->lastName = $registerUser->lastName;
+    $user->email = $registerUser->email;
+    $user->password = \md5($registerUser->password);
+    $user->userGroup->id = $registerUser->userGroupId;
+
+    return (new Users())->addUser($user);
   }
 }

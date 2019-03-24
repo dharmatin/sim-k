@@ -6,7 +6,7 @@ use Dharmatin\Simk\Core\Model;
 
 class Users extends Model {
   const DEFAULT_SELECT_STATEMENT = "SELECT U.id as userId, U.username, U.password, U.email, U.first_name, U.last_name,
-    UG.id as groupId, UG.group_name, UR.id as roleId, UR.actions, UR.role_name
+    UG.id as groupId, UG.group_name, UR.id as roleId, UR.actions, UR.role_name, U.status
     FROM users U
     INNER JOIN user_group UG ON U.user_group_id = UG.id
     INNER JOIN user_role UR ON UR.id = UG.user_role_id ";
@@ -42,8 +42,11 @@ class Users extends Model {
       "username" => $username, 
       "status" => self::ACTIVE_STATUS
     ));
-    $this->setUser($user);
-    return $this->getUser();
+    if ($user) {
+      $this->setUser($user);
+      return $this->getUser();
+    }
+    return;
   }
 
   public function addUser($user) {
@@ -71,6 +74,7 @@ class Users extends Model {
     $this->data->email = $user["email"];
     $this->data->firstName = $user["first_name"];
     $this->data->lastName = $user["last_name"];
+    $this->data->status = $user["status"];
     $this->data->userGroup->id = $user["groupId"];
     $this->data->userGroup->groupName = $user["group_name"];
     $this->data->userGroup->userRole->id = $user["roleId"];

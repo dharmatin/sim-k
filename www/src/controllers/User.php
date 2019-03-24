@@ -24,6 +24,10 @@ class User extends AppController {
 
   public function register() {
     $service = new AuthService();
-    $service->register(TypeHelper::cast(new Register, $this->request->getJsonRawBody()));exit;
+    $response = $service->register(TypeHelper::cast(new Register, $this->request->getJsonRawBody()));
+    if ($response["code"] == $this->config::read("constant.SUCCESS"))
+      return $this->successResponse($response["message"]);
+
+    return $this->errorResponse($response["code"], $response["message"]);
   }
 }
