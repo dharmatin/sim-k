@@ -85,11 +85,12 @@ class Users extends Model {
       $set = "";
       $valueSet = [];
       foreach($user as $key => $value) {
-        if (!empty($value) && $key !="id") {
-          if (is_object($value)) {
-            $key .= "Id";
-            $value = $value->id;
-          }
+        if (!empty($value) && $key !="id" && !is_object($value)) {
+          $valueSet[$key] = $value;
+          $set .= StringHelper::toSnakeCase($key) . " = :$key, ";
+        } elseif (is_object($value) && !empty($value->id)) {
+          $key .= "Id";
+          $value = $value->id;
           $valueSet[$key] = $value;
           $set .= StringHelper::toSnakeCase($key) . " = :$key, ";
         }

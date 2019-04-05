@@ -21,4 +21,9 @@ return function($router) use($basePath) {
     "controller" => "user",
     "method" => "updateUser"
   ));
+
+  $router->put($basePath . "/change-status", array(
+    "controller" => "user",
+    "method" => "changeStatus"
+  ));
 };
