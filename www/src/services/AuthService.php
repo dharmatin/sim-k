@@ -86,7 +86,20 @@ class AuthService {
   }
 
   public function reset($email) {
-
+    $user = $this->getUserByEmail($email);
+    if ($user) {
+      $user->password = null;
+      if($this->updateUser($user)) {
+        return array(
+          "code" => Configure::read("constant.SUCCESS"),
+          "message" => Translator::translate("success_reset")
+        );
+      }
+    }
+    return array(
+      "code" => Configure::read("constant.ERR_NOTFOUND"),
+      "message" => Translator::translate("error_message.error_404")
+    );
   }
 
   public function getTokenInformation($token) {
@@ -110,19 +123,23 @@ class AuthService {
     return JWT::encode($payload, Configure::read('app.token.key'));
   }
 
-  public function isVerifiedPassword(User $user, $password) {
-    return md5($password) === $user->password;
-  }
-  public function getUserByUsername($username) {
-    return ((new Users()))->getUserByUsername($username);
-  }
-
   public function setUser($user) {
     $this->user = $user;
   }
 
   public function getUser() {
     return $this->user;
+  }
+
+  private function isVerifiedPassword(User $user, $password) {
+    return md5($password) === $user->password;
+  }
+  private function getUserByUsername($username) {
+    return ((new Users()))->getUserByUsername($username);
+  }
+
+  private function getUserByEmail($email) {
+    return (new Users())->getUserByEmail($email);
   }
 
   private function addLoginAttempt($username) {
@@ -154,5 +171,9 @@ class AuthService {
     $user->userGroup->id = $registerUser->userGroupId;
 
     return (new Users())->addUser($user);
+  }
+
+  private function updateUser(User $user) {
+    return (new Users())->updateUser($user);
   }
 }

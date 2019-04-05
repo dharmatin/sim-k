@@ -24,13 +24,13 @@ class Request implements IRequest {
     return $result;
   }
 
-  public function getHeaders() {
+  public function getHeaders($name = "") {
     $headers = array();
     foreach(getallheaders() as $key => $value) {
       $headers[$this->__toCammelCase($key)] = $value;
     }
 
-    return $headers;
+    return $name ? $headers[$name] : $headers;
   }
 
   public function getBody() {

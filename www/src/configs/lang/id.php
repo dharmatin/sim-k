@@ -2,9 +2,12 @@
 
 return array(
   "success" => "Sukses",
+  "success_reset" => "User berhasil direset",
   "error_message" => array(
     "expired_token" => "Token telah habis",
-    "error_500" => "Terjadi Kesalahan Internal"
+    "error_500" => "Terjadi Kesalahan Internal",
+    "error_403" => "Anda tidak diizinkan",
+    "error_404" => "Tidak ditemukan"
   ),
   "login" => array(
     "success" => "Sukses Login",

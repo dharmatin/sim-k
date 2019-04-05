@@ -2,9 +2,12 @@
 
 return array(
   "success" => "Success",
+  "success_reset" => "User reset successfully",
   "error_message" => array(
     "expired_token" => "Expired Token",
-    "error_500" => "Internal Server Error"
+    "error_500" => "Internal Server Error",
+    "error_403" => "Unauthorized",
+    "error_404" => "Not Found"
   ),
   "login" => array(
     "success" => "Login successfully",

@@ -11,4 +11,9 @@ return function($router) use($basePath) {
     "controller" => "user",
     "method" => "register"
   ));
+
+  $router->post($basePath . "/reset-password", array(
+    "controller" => "user",
+    "method" => "resetPassword"
+  ));
 };
