@@ -16,4 +16,9 @@ return function($router) use($basePath) {
     "controller" => "user",
     "method" => "resetPassword"
   ));
+
+  $router->put($basePath . "/update", array(
+    "controller" => "user",
+    "method" => "updateUser"
+  ));
 };

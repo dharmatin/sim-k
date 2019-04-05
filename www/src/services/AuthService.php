@@ -88,7 +88,7 @@ class AuthService {
   public function reset($email) {
     $user = $this->getUserByEmail($email);
     if ($user) {
-      $user->password = null;
+      $user->password = \md5(Configure::read("app.defaultPassword"));
       if($this->updateUser($user)) {
         return array(
           "code" => Configure::read("constant.SUCCESS"),
@@ -99,6 +99,19 @@ class AuthService {
     return array(
       "code" => Configure::read("constant.ERR_NOTFOUND"),
       "message" => Translator::translate("error_message.error_404")
+    );
+  }
+
+  public function updateProfile(User $user) {
+    if ($this->updateUser($user)) {
+      return array(
+        "code" => Configure::read("constant.SUCCESS"),
+        "message" => Translator::translate("success")
+      );
+    }
+    return array(
+      "code" => Configure::read("constant.ERR_INTERNAL"),
+      "message" => Translator::translate("error_message.error_505")
     );
   }
 
