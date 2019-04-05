@@ -30,4 +30,20 @@ class User extends AppController {
 
     return $this->errorResponse($response["code"], $response["message"]);
   }
+
+  public function resetPassword() {
+    $service = new AuthService();
+    $token = $this->request->getHeaders("authorization");
+    $userInfo = $service->getTokenInformation($token)->data;
+
+    if ($userInfo->userGroup->id == $this->config::read("constant.USER_GROUP.SUPER_USER")) {
+      $request = $this->request->getJsonRawBody();
+      $response = $service->reset($request->email);
+      if ($response["code"] == $this->config::read("constant.SUCCESS")) {
+        return $this->successResponse($response["message"]);
+      }
+      return $this->errorResponse($response["code"], $response["message"]);
+    }
+    return $this->errorResponse($this->config::read("constant.ERR_UNAUTHORIZED"), $this->translator::translate("error_message.error_403"));
+  }
 }

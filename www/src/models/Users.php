@@ -49,6 +49,18 @@ class Users extends Model {
     return;
   }
 
+  public function getUserByEmail($email) {
+    $user = $this->fetchOne(self::DEFAULT_SELECT_STATEMENT . "WHERE U.email=:email AND status=:status", array(
+      "email" => $email, 
+      "status" => self::ACTIVE_STATUS
+    ));
+    if ($user) {
+      $this->setUser($user);
+      return $this->getUser();
+    }
+    return;
+  }
+
   public function addUser($user) {
     $sql = "INSERT INTO users (
       username, email, password, first_name, last_name, user_group_id
@@ -65,6 +77,29 @@ class Users extends Model {
     ));
 
     return $q;
+  }
+
+  public function updateUser($user) {
+    $sql = "UPDATE users SET " .
+      "username = :username, " .
+      "email = :email, " .
+      "password = :password, " .
+      "first_name = :first_name, " .
+      "last_name = :last_name, " .
+      "user_group_id = :userGroupId, " .
+      "status = :status " .
+      "WHERE id = :id";
+    
+    return $this->query($sql, array(
+      "username" => $user->username,
+      "email" => $user->email,
+      "password" => $user->password,
+      "first_name" => $user->firstName,
+      "last_name" => $user->lastName,
+      "userGroupId" => $user->userGroup->id,
+      "status" => $user->status,
+      "id" => $user->id
+    ));
   }
 
   public function setUser($user) {
