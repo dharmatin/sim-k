@@ -63,6 +63,20 @@ class User extends AppController {
     return $this->errorResponse($this->config::read("constant.ERR_UNAUTHORIZED"), $this->translator::translate("error_message.error_403"));
   }
 
+  public function changeStatus() {
+    $service = new AuthService();
+    if ($this->getUserInfo()) {
+      $request = $this->request->getJsonRawBody();
+      $response = $service->updateProfile(TypeHelper::cast(new \Dharmatin\Simk\Model\Data\User, $request));
+      if ($response["code"] == $this->config::read("constant.SUCCESS")) {
+        return $this->successResponse($response["message"]);
+      }
+
+      return $this->errorResponse($response["code"], $response["message"]);
+    }
+    return $this->errorResponse($this->config::read("constant.ERR_UNAUTHORIZED"), $this->translator::translate("error_message.error_403"));
+  }
+
   private function getUserInfo() {
     $service = new AuthService();
     $token = $this->request->getHeaders("authorization");
