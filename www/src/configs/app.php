@@ -3,6 +3,7 @@
 return array(
   "env" => "dev",
   "defaultLanguage" => "id",
+  "defaultPassword" => "simk12345",
   "log" => array(
     "enable" => true,
     "level" => array("debug", "info", "error"),

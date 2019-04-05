@@ -3,6 +3,7 @@
 namespace Dharmatin\Simk\Model;
 
 use Dharmatin\Simk\Core\Model;
+use Dharmatin\Simk\Helper\StringHelper;
 
 class Users extends Model {
   const DEFAULT_SELECT_STATEMENT = "SELECT U.id as userId, U.username, U.password, U.email, U.first_name, U.last_name,
@@ -80,26 +81,31 @@ class Users extends Model {
   }
 
   public function updateUser($user) {
-    $sql = "UPDATE users SET " .
-      "username = :username, " .
-      "email = :email, " .
-      "password = :password, " .
-      "first_name = :first_name, " .
-      "last_name = :last_name, " .
-      "user_group_id = :userGroupId, " .
-      "status = :status " .
-      "WHERE id = :id";
+    $buildValueAndSetQuery = function() use ($user) {
+      $set = "";
+      $valueSet = [];
+      foreach($user as $key => $value) {
+        if (!empty($value) && $key !="id") {
+          if (is_object($value)) {
+            $key .= "Id";
+            $value = $value->id;
+          }
+          $valueSet[$key] = $value;
+          $set .= StringHelper::toSnakeCase($key) . " = :$key, ";
+        }
+      }
+      return array(
+        "set" => substr(rtrim($set), 0, -1),
+        "value" => $valueSet
+      );
+    };
     
-    return $this->query($sql, array(
-      "username" => $user->username,
-      "email" => $user->email,
-      "password" => $user->password,
-      "first_name" => $user->firstName,
-      "last_name" => $user->lastName,
-      "userGroupId" => $user->userGroup->id,
-      "status" => $user->status,
-      "id" => $user->id
-    ));
+    $valueAndSetQuery = $buildValueAndSetQuery();
+    $valueAndSetQuery["value"]["id"] = $user->id;
+
+    $sql = "UPDATE users SET " . $valueAndSetQuery["set"] . " WHERE id = :id";
+
+    return $this->query($sql, $valueAndSetQuery["value"]);
   }
 
   public function setUser($user) {

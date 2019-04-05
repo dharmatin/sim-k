@@ -33,9 +33,7 @@ class User extends AppController {
 
   public function resetPassword() {
     $service = new AuthService();
-    $token = $this->request->getHeaders("authorization");
-    $userInfo = $service->getTokenInformation($token)->data;
-
+    $userInfo = $this->getUserInfo();
     if ($userInfo->userGroup->id == $this->config::read("constant.USER_GROUP.SUPER_USER")) {
       $request = $this->request->getJsonRawBody();
       $response = $service->reset($request->email);
@@ -45,5 +43,29 @@ class User extends AppController {
       return $this->errorResponse($response["code"], $response["message"]);
     }
     return $this->errorResponse($this->config::read("constant.ERR_UNAUTHORIZED"), $this->translator::translate("error_message.error_403"));
+  }
+
+  public function updateUser() {
+    $service = new AuthService();
+    $userInfo = $this->getUserInfo();
+    if ($userInfo) {
+      $request = $this->request->getJsonRawBody();
+      foreach($request as $key=>$value) {
+        $userInfo->{$key} = $value;
+      }
+      $response = $service->updateProfile(TypeHelper::cast(new \Dharmatin\Simk\Model\Data\User, $userInfo));
+      if ($response["code"] == $this->config::read("constant.SUCCESS")) {
+        return $this->successResponse($response["message"]);
+      }
+
+      return $this->errorResponse($response["code"], $response["message"]);
+    }
+    return $this->errorResponse($this->config::read("constant.ERR_UNAUTHORIZED"), $this->translator::translate("error_message.error_403"));
+  }
+
+  private function getUserInfo() {
+    $service = new AuthService();
+    $token = $this->request->getHeaders("authorization");
+    return $service->getTokenInformation($token)->data;
   }
 }
